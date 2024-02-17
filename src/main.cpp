@@ -77,7 +77,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 {
 	const auto InitLogger = []() -> bool {
 #ifndef NDEBUG
-		auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+		//auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
 #else
 		auto path = logger::log_directory();
 		if (!path)
@@ -85,6 +85,12 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 		*path /= fmt::format(FMT_STRING("{}.log"), Plugin::NAME);
 		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
+		auto path = logger::log_directory();
+		if (!path)
+			return false;
+		*path /= fmt::format(FMT_STRING("{}.log"), Plugin::NAME);
+		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
+
 		auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
 #ifndef NDEBUG
 		log->set_level(spdlog::level::trace);

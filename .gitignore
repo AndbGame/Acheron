@@ -4,3 +4,6 @@
 build/
 /vcpkg_installed
 
+CMakeFiles
+include/Plugin.h
+version.rc

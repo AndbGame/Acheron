@@ -14,8 +14,8 @@
     {
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
-          "type": "STRING",
-          "value": "$env{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            "type": "STRING",
+            "value": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
         }
       },
       "hidden": true,
@@ -40,9 +40,9 @@
         "strategy": "set",
         "value": "x64"
       },
-      "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /WX"
-      },
+        "cacheVariables": {
+            "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /WX /wd4996"
+        },
       "generator": "Visual Studio 17 2022",
       "inherits": [
         "cmake-dev",
