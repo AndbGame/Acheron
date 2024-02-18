@@ -156,19 +156,33 @@ namespace Acheron
 		if (!group) {
 			return;
 		}
-		std::vector<RE::CombatTarget*> remove_these{};
-		for (auto&& cmbtarget : group->targets) {
-			auto targetptr = cmbtarget.targetHandle.get();
-			if (targetptr && Defeat::IsPacified(targetptr.get())) {
-				remove_these.push_back(&cmbtarget);
+
+		SKSE::GetTaskInterface()->AddTask([=]() {
+			std::vector<RE::CombatTarget*> remove_these{};
+			//group->lock.LockForRead();
+			for (auto&& cmbtarget : group->targets) {
+				auto targetptr = cmbtarget.targetHandle.get();
+				if (targetptr && Defeat::IsPacified(targetptr.get())) {
+					remove_these.push_back(&cmbtarget);
+				}
 			}
-		}
-		for (auto&& remove : remove_these) {
-			auto actor = remove->targetHandle.get();
-			logger::trace("Hooks::UpdateCombatControllerSettings erase = {:08X}", actor == nullptr ? 0 : actor->GetFormID());
-			group->targets.erase(remove);
-			logger::trace("Hooks::UpdateCombatControllerSettings erase done");
-		}
+			//group->lock.UnlockForRead();
+
+			//group->lock.LockForWrite();
+			for (auto&& remove : remove_these) {
+				auto actor = remove->targetHandle.get();
+				/*
+				Hooks.cpp(173): [03:53:45] [trace] Hooks::UpdateCombatControllerSettings erase 00000000 from FF005543
+			
+				*/
+				logger::trace("Hooks::UpdateCombatControllerSettings erase {:08X} from {:08X}", actor == nullptr ? 0 : actor->GetFormID(), a_this->GetFormID());
+				if (actor != nullptr) {
+					group->targets.erase(remove);
+				}
+				logger::trace("Hooks::UpdateCombatControllerSettings erase done");
+			}
+			//group->lock.UnlockForWrite();
+		});
 	}
 
 	void Hooks::CalcDamageOverTime(RE::Actor* a_target)
