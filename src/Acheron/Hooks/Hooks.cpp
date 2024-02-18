@@ -164,7 +164,10 @@ namespace Acheron
 			}
 		}
 		for (auto&& remove : remove_these) {
+			auto actor = remove->targetHandle.get();
+			logger::trace("Hooks::UpdateCombatControllerSettings erase = {:08X}", actor == nullptr ? 0 : actor->GetFormID());
 			group->targets.erase(remove);
+			logger::trace("Hooks::UpdateCombatControllerSettings erase done");
 		}
 	}
 
