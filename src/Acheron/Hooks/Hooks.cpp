@@ -157,31 +157,47 @@ namespace Acheron
 			return;
 		}
 
+		auto a_this_formid = a_this->GetFormID();
+
 		SKSE::GetTaskInterface()->AddTask([=]() {
+			//return;
+			logger::trace("Hooks::UpdateCombatControllerSettings 1");
 			std::vector<RE::CombatTarget*> remove_these{};
 			//group->lock.LockForRead();
+			logger::trace("Hooks::UpdateCombatControllerSettings 2");
 			for (auto&& cmbtarget : group->targets) {
+				logger::trace("Hooks::UpdateCombatControllerSettings 2.1");
 				auto targetptr = cmbtarget.targetHandle.get();
+				logger::trace("Hooks::UpdateCombatControllerSettings 2.2");
 				if (targetptr && Defeat::IsPacified(targetptr.get())) {
 					remove_these.push_back(&cmbtarget);
 				}
+				logger::trace("Hooks::UpdateCombatControllerSettings 2.3");
 			}
 			//group->lock.UnlockForRead();
-
+			logger::trace("Hooks::UpdateCombatControllerSettings 3");
 			//group->lock.LockForWrite();
 			for (auto&& remove : remove_these) {
-				auto actor = remove->targetHandle.get();
-				/*
-				Hooks.cpp(173): [03:53:45] [trace] Hooks::UpdateCombatControllerSettings erase 00000000 from FF005543
-			
-				*/
-				logger::trace("Hooks::UpdateCombatControllerSettings erase {:08X} from {:08X}", actor == nullptr ? 0 : actor->GetFormID(), a_this->GetFormID());
-				if (actor != nullptr) {
-					group->targets.erase(remove);
+				logger::trace("Hooks::UpdateCombatControllerSettings 3.1");
+				auto targetActor = remove->targetHandle.get().get();
+				auto attackedActor = remove->attackedMember.get().get();
+				if (attackedActor == nullptr) {
+					logger::trace("Hooks::UpdateCombatControllerSettings 3.4 attackedActor = nullptr");
 				}
-				logger::trace("Hooks::UpdateCombatControllerSettings erase done");
+				if (targetActor != nullptr) {
+					logger::trace("Hooks::UpdateCombatControllerSettings 3.2 erase <{:08X}> from <{:08X}>", targetActor == nullptr ? 0 : targetActor->GetFormID(), a_this_formid);
+					group->targets.erase(remove);
+					logger::trace("Hooks::UpdateCombatControllerSettings 3.3 erased from <{:08X}>", a_this_formid);
+				} else {
+					/*
+						Hooks.cpp(173): [03:53:45] [trace] Hooks::UpdateCombatControllerSettings erase 00000000 from FF005543
+			
+					*/	
+					logger::trace("Hooks::UpdateCombatControllerSettings 3.4 targetActor = nullptr");
+				}
 			}
 			//group->lock.UnlockForWrite();
+			logger::trace("Hooks::UpdateCombatControllerSettings 4");
 		});
 	}
 
