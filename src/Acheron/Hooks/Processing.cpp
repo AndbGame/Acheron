@@ -64,7 +64,9 @@ namespace Acheron
 					std::thread([player]() {
 						std::this_thread::sleep_for(6s);
 						SKSE::GetTaskInterface()->AddTask([player]() {
+							logger::trace("SKSE Task DefeatResult::Resolution");
 							Defeat::RescueDelayed(player, false);
+							logger::trace("SKSE Task DefeatResult::Resolution done");
 						});
 					}).detach();
 				} else {

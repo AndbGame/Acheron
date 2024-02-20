@@ -137,7 +137,9 @@ namespace Acheron
 			std::thread([a_victim]() {
 				std::this_thread::sleep_for(4s);
 				SKSE::GetTaskInterface()->AddTask([=]() {
+					logger::trace("SKSE Task Defeat::RescueDelayed");
 					UndoPacify(a_victim);
+					logger::trace("SKSE Task Defeat::RescueDelayed done");
 				});
 			}).detach();
 		}

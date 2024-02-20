@@ -15,7 +15,9 @@ namespace Papyrus
 			return;
 		}
 		SKSE::GetTaskInterface()->AddTask([=]() {
+			logger::trace("SKSE Task Defeat::DefeatActor");
 			Acheron::Defeat::DefeatActor(a_actor);
+			logger::trace("SKSE Task Defeat::DefeatActor done");
 		});
 	}
 
@@ -26,7 +28,9 @@ namespace Papyrus
 			return;
 		}
 		SKSE::GetTaskInterface()->AddTask([=]() {
+			logger::trace("SKSE Task Defeat::RescueActor");
 			Acheron::Defeat::RescueActor(a_actor, undopacify);
+			logger::trace("SKSE Task Defeat::RescueActor done");
 		});
 	}
 
