@@ -159,13 +159,36 @@ namespace Acheron
 
 		//auto a_this_formid = a_this->GetFormID();
 
-		SKSE::GetTaskInterface()->AddTask([=]() {
+		//SKSE::GetTaskInterface()->AddTask([=]() {
 			//logger::trace("Hooks::UpdateCombatControllerSettings 1");
 			std::vector<RE::CombatTarget*> remove_these{};
+		group->lock.LockForWrite();
 			//group->lock.LockForRead();
 			//logger::trace("Hooks::UpdateCombatControllerSettings 2");
 			for (auto&& cmbtarget : group->targets) {
 				//logger::trace("Hooks::UpdateCombatControllerSettings 2.1");
+			/*
+    [0 ] 0x7FF74D92AE42 SkyrimSE.exe+013AE42
+        mov esi,[rcx]
+    [1 ] 0x7FF902B6896F  Acheron.dll+027896F REL::invoke<bool (__cdecl*)(RE::BSPointerHandle<RE::Actor,RE::BSUntypedPointerHandle<21,5> > const &,RE::NiPointer<RE::Actor> &),RE::BSPointerHandle<RE::Actor,RE::BSUntypedPointerHandle<21,5> > const &,RE::NiPointer<RE::Actor> &>
+        [E:\andb_skyrim_3\projects\Acheron\lib\CommonLibSSE\include\REL\Relocation.h:184]
+        add rsp,30h
+    [2 ] 0x7FF902B68737  Acheron.dll+0278737 REL::Relocation<bool (__cdecl*)(RE::BSPointerHandle<RE::Actor,RE::BSUntypedPointerHandle<21,5> > const &,RE::NiPointer<RE::Actor> &)>::operator()<RE::BSPointerHandle<RE::Actor,RE::BSUntypedPointerHandle<21,5> > const &,RE::NiPointer<RE::Actor> &>
+        [E:\andb_skyrim_3\projects\Acheron\lib\CommonLibSSE\include\REL\Relocation.h:309]
+        add rsp,30h
+    [3 ] 0x7FF902B69065  Acheron.dll+0279065 RE::BSPointerHandleManagerInterface<RE::Actor,RE::HandleManager>::GetSmartPointer
+        [E:\andb_skyrim_3\projects\Acheron\lib\CommonLibSSE\include\RE\B\BSPointerHandle.h:221]
+        mov rdi,rax
+    [4 ] 0x7FF902B6962E  Acheron.dll+027962E RE::BSPointerHandle<RE::Actor,RE::BSUntypedPointerHandle<21,5> >::get_smartptr
+        [E:\andb_skyrim_3\projects\Acheron\lib\CommonLibSSE\include\RE\B\BSPointerHandle.h:238]
+        add rsp,20h
+    [5 ] 0x7FF902A49465  Acheron.dll+0159465 RE::BSPointerHandle<RE::Actor,RE::BSUntypedPointerHandle<21,5> >::get
+        [E:\andb_skyrim_3\projects\Acheron\lib\CommonLibSSE\include\RE\B\BSPointerHandle.h:158]
+        mov rax,[rsp+78h]
+    [6 ] 0x7FF902AABAA6  Acheron.dll+01BBAA6 Acheron::Hooks::UpdateCombatControllerSettings
+        [E:\andb_skyrim_3\projects\Acheron\src\Acheron\Hooks\Hooks.cpp:169]
+        nop
+			*/
 				auto targetptr = cmbtarget.targetHandle.get();
 				//logger::trace("Hooks::UpdateCombatControllerSettings 2.2");
 				if (targetptr && Defeat::IsPacified(targetptr.get())) {
@@ -175,29 +198,35 @@ namespace Acheron
 			}
 			//group->lock.UnlockForRead();
 			//logger::trace("Hooks::UpdateCombatControllerSettings 3");
+			//if (remove_these.size() == 0) {
+			//	return;
+			//}
 			//group->lock.LockForWrite();
 			for (auto&& remove : remove_these) {
 				//logger::trace("Hooks::UpdateCombatControllerSettings 3.1");
 				auto targetActor = remove->targetHandle.get().get();
 				auto attackedActor = remove->attackedMember.get().get();
 				if (attackedActor == nullptr) {
-					logger::warn("Hooks::UpdateCombatControllerSettings 3.4 attackedActor = nullptr");
+					/*
+						Hooks.cpp(184): [15:15:29] [warning] Hooks::UpdateCombatControllerSettings 3.4 attackedActor = nullptr
+						CTD
+					*/
+					logger::warn("Hooks::UpdateCombatControllerSettings attackedActor = nullptr");
+					//continue;
 				}
-				if (targetActor != nullptr) {
-					//logger::trace("Hooks::UpdateCombatControllerSettings 3.2 erase <{:08X}> from <{:08X}>", targetActor == nullptr ? 0 : targetActor->GetFormID(), a_this_formid);
-					group->targets.erase(remove);
-					//logger::trace("Hooks::UpdateCombatControllerSettings 3.3 erased from <{:08X}>", a_this_formid);
-				} else {
+				if (targetActor == nullptr) {
 					/*
 						Hooks.cpp(173): [03:53:45] [trace] Hooks::UpdateCombatControllerSettings erase 00000000 from FF005543
-			
-					*/	
-					logger::warn("Hooks::UpdateCombatControllerSettings 3.4 targetActor = nullptr");
+						CTD
+					*/
+					logger::warn("Hooks::UpdateCombatControllerSettings targetActor = nullptr");
+					//continue;
 				}
+				group->targets.erase(remove);
 			}
-			//group->lock.UnlockForWrite();
+			group->lock.UnlockForWrite();
 			//logger::trace("Hooks::UpdateCombatControllerSettings 4");
-		});
+		//});
 	}
 
 	void Hooks::CalcDamageOverTime(RE::Actor* a_target)
