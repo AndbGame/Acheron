@@ -208,19 +208,19 @@ namespace Acheron
 				auto attackedActor = remove->attackedMember.get().get();
 				if (attackedActor == nullptr) {
 					/*
-						Hooks.cpp(184): [15:15:29] [warning] Hooks::UpdateCombatControllerSettings 3.4 attackedActor = nullptr
+						[19:59:07] [warning] Hooks::UpdateCombatControllerSettings attackedActor = nullptr
 						CTD
 					*/
 					logger::warn("Hooks::UpdateCombatControllerSettings attackedActor = nullptr");
-					//continue;
+					continue;
 				}
 				if (targetActor == nullptr) {
 					/*
-						Hooks.cpp(173): [03:53:45] [trace] Hooks::UpdateCombatControllerSettings erase 00000000 from FF005543
+						[19:59:07] [warning] Hooks::UpdateCombatControllerSettings targetActor = nullptr
 						CTD
 					*/
 					logger::warn("Hooks::UpdateCombatControllerSettings targetActor = nullptr");
-					//continue;
+					continue;
 				}
 				group->targets.erase(remove);
 			}
